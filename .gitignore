@@ -216,3 +216,12 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+
+node_modules/
+
+*.sqlite3
+*.sqlite
+*.db
+*.pdf
+*.bin
