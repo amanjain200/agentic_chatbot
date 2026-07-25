@@ -41,6 +41,23 @@ const SUGGESTIONS = [
 
 const GROUPS = ['Today', 'Previous 7 days', 'Previous 30 days']
 
+const createId = () => {
+  if (typeof globalThis.crypto?.randomUUID === 'function') {
+    return globalThis.crypto.randomUUID()
+  }
+
+  if (typeof globalThis.crypto?.getRandomValues === 'function') {
+    const bytes = new Uint8Array(16)
+    globalThis.crypto.getRandomValues(bytes)
+    bytes[6] = (bytes[6] & 0x0f) | 0x40
+    bytes[8] = (bytes[8] & 0x3f) | 0x80
+    const hex = Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0'))
+    return `${hex.slice(0, 4).join('')}-${hex.slice(4, 6).join('')}-${hex.slice(6, 8).join('')}-${hex.slice(8, 10).join('')}-${hex.slice(10).join('')}`
+  }
+
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`
+}
+
 const groupConversation = (updatedAt) => {
   if (!updatedAt) return 'Previous 30 days'
   const ageMs = Date.now() - new Date(updatedAt).getTime()
@@ -169,7 +186,7 @@ function App() {
       })))
     } catch {
       setMessages([
-        { id: crypto.randomUUID(), role: 'assistant', error: true, content: 'I could not load this chat from the backend.' },
+        { id: createId(), role: 'assistant', error: true, content: 'I could not load this chat from the backend.' },
       ])
     } finally {
       setLoading(false)
@@ -179,7 +196,7 @@ function App() {
   const handleFiles = async (event) => {
     const files = Array.from(event.target.files || [])
     if (!files.length) return
-    const threadId = activeChat || crypto.randomUUID()
+    const threadId = activeChat || createId()
     if (!activeChat) setActiveChat(threadId)
     try {
       const uploaded = await api.uploadDocuments(files, threadId)
@@ -203,10 +220,10 @@ function App() {
   const sendMessage = async () => {
     const cleanInput = input.replace(/\s*\[listening:.*\]$/, '').trim()
     if ((!cleanInput && !attachments.length) || loading) return
-    const conversationId = activeChat || crypto.randomUUID()
+    const conversationId = activeChat || createId()
 
     const userMessage = {
-      id: crypto.randomUUID(),
+      id: createId(),
       role: 'user',
       content: cleanInput || 'Please review the attached document.',
       attachments,
@@ -236,7 +253,7 @@ function App() {
       })
       setMessages((current) => [...current, { id: response.id, role: 'assistant', content: response.content }])
     } catch {
-      setMessages((current) => [...current, { id: crypto.randomUUID(), role: 'assistant', error: true, content: 'I could not reach the backend. Check the API URL and try again.' }])
+      setMessages((current) => [...current, { id: createId(), role: 'assistant', error: true, content: 'I could not reach the backend. Check the API URL and try again.' }])
     } finally {
       setLoading(false)
     }
