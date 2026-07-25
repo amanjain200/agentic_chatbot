@@ -19,7 +19,6 @@ os.environ.setdefault("REQUESTS_CA_BUNDLE", certifi.where())
 
 from fastapi import FastAPI, File, Form, HTTPException, Query, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from langchain_core.messages import AIMessage, HumanMessage
 from pydantic import BaseModel, Field
@@ -252,7 +251,7 @@ if FRONTEND_DIST.exists():
     app.mount("/", StaticFiles(directory=FRONTEND_DIST, html=True), name="frontend")
 else:
     @app.get("/", include_in_schema=False)
-    def serve_frontend() -> FileResponse | dict:
+    def serve_frontend() -> dict[str, str]:
         """Tell local developers what to do when dist/ has not been built."""
         return {"detail": "Frontend build not found. Run: cd frontend && npm run build"}
 
