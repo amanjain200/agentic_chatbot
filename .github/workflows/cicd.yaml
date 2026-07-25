@@ -76,8 +76,8 @@ jobs:
             --name agentic-chatbot \
             --restart always \
             -p 8080:8080 \
-            -e GOOGLE_API_KEY="${{ secrets.GOOGLE_API_KEY }}" \
-            -e GOOGLE_MODEL="${{ secrets.GOOGLE_MODEL }}" \
+            -e GEMINI_API_KEY="${{ secrets.GEMINI_API_KEY }}" \
+            -e GEMINI_MODEL="${{ secrets.GEMINI_MODEL }}" \
             -e TAVILY_API_KEY="${{ secrets.TAVILY_API_KEY }}" \
             -e LANGSMITH_TRACING="${{ secrets.LANGSMITH_TRACING }}" \
             -e LANGSMITH_ENDPOINT="${{ secrets.LANGSMITH_ENDPOINT }}" \
